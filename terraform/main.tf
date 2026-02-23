@@ -20,8 +20,9 @@ module "vpc" {
   private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
   public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
 
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
+  enable_nat_gateway = true
+  single_nat_gateway = true
+  # this two  required for node to communicate with each other 
   enable_dns_hostnames = true
   enable_dns_support   = true
 
@@ -49,7 +50,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     initial = {
-      instance_types = ["t3.medium"]
+      instance_types = ["c7i-flex.large"]
 
       min_size     = 2
       max_size     = 3
@@ -59,7 +60,7 @@ module "eks" {
     }
   }
 
-  enable_irsa = true
+  enable_irsa                              = true
   enable_cluster_creator_admin_permissions = true
 
   tags = {
@@ -117,11 +118,11 @@ data "http" "argocd_manifest" {
 }
 
 resource "kubectl_manifest" "argocd" {
-  for_each = { for doc in split("---", data.http.argocd_manifest.response_body) : 
-    sha256(doc) => doc if trimspace(doc) != "" 
+  for_each = { for doc in split("---", data.http.argocd_manifest.response_body) :
+    sha256(doc) => doc if trimspace(doc) != ""
   }
 
-  yaml_body = each.value
+  yaml_body          = each.value
   override_namespace = "argocd"
 
   depends_on = [kubernetes_namespace_v1.argocd]
