@@ -23,4 +23,13 @@ terraform {
       version = ">= 3.0"
     }
   }
+
+  # backend "s3" {
+  #   bucket       = "remote-state-venkatesh-dev"
+  #   key          = "terrform/terraform.tfstate"
+  #   region       = "us-east-1"
+  #   use_lockfile = true
+  #   encrypt      = true
+  # }
 }
+
